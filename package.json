@@ -1,0 +1,42 @@
+{
+  "name": "es6-boilerplate",
+  "version": "1.0.0",
+  "description": "Code test for UNIT9. Using webpack, babel, scss and threejs.",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "http-server ./dist -p 8800  && npm run assets",
+    "assets": "sync-files ./app/assets ./dist/assets",
+    "watch": "npm run assets && webpack-dev-server --inline --open",
+    "production": "webpack -p"
+  },
+  "keywords": [
+    "webpack",
+    "es6",
+    "babel",
+    "scss"
+  ],
+  "author": "Daisy Smith",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.17.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "css-loader": "^0.25.0",
+    "html-webpack-plugin": "^2.22.0",
+    "http-server": "^0.9.0",
+    "node-sass": "^3.10.1",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.2.1"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.0.1",
+    "eslint": "^3.16.1",
+    "file-loader": "^0.10.1",
+    "progress-bar-webpack-plugin": "^1.9.3",
+    "sync-files": "^1.0.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-register": "^6.23.0",
+    "babel-runtime": "^6.23.0"
+  }
+}

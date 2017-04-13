@@ -1,101 +1,117 @@
-"use strict";
 import './carousel.scss';
 
 export default class Carousel {
-    constructor(options) {
-        super(state);
-        this.state = options;
-        this.state.imageElements = [];
-        this.state.currentImage = 0;
-        this.state.time = 0;
-        this.state.last = 0;
+  constructor(height = 500, images = []) {
+    this._carousel = {
+      currentImage: 0,
+      imageElements: []
+    };
+
+    this.timeLast = 0;
+    this.elements = [];
+    this.images = images;
+    this.height = height;
+    this.current = 0;
+    this.time = 0;
+  }
+
+  init() {
+    const { height } = this;
+    const container = document.getElementById('container');
+    const carouselDiv = document.createElement('div');
+    const nextBtn = document.createElement('div');
+    const prevBtn = document.createElement('div');
+
+    carouselDiv.className = 'o-carousel';
+    carouselDiv.style.height = `${height}px`;
+    nextBtn.className = 'carousel__next--button';
+    prevBtn.className = 'carousel__prev--button';
+
+    container.append(carouselDiv);
+    carouselDiv.append(prevBtn);
+    carouselDiv.append(nextBtn);
+
+    nextBtn.addEventListener('click', () => {
+      this.next();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      this.prev();
+    });
+
+    this.carouselDiv = carouselDiv;
+    this.createImages();
+  }
+
+  createImages() {
+    const { images, elements } = this;
+    for (let index = 0; index < images.length; index++) {
+      let imageSrc = images[index];
+
+      const carouselImage = document.createElement('div');
+      carouselImage.className = 'carousel__image';
+      carouselImage.style.backgroundImage = `url(${imageSrc})`;
+
+      this.carouselDiv.append(carouselImage);
+      if (index !== 0) carouselImage.classList.add('hide');
+
+      elements.push(carouselImage);
     }
 
-    init() {
-        const carouselDiv = document.createElement('div');
-        const nextBtn = document.createElement('div');
-        const prevBtn = document.createElement('div');
-        carouselDiv.className = 'o-carousel';
-        nextBtn.className = 'carousel__next--button';
-        prevBtn.className = 'carousel__prev--button';
-        const container = document.getElementById('container');
-        container.append(carouselDiv);
-        container.append(nextBtn);
-        container.append(prevBtn);
+    this.loop();
+  }
 
-        nextBtn.addEventListener('click', () => {
-            console.log('next');
-        })
-        prevBtn.addEventListener('click', () => {
-            console.log('prev');
-        })
+  next() {
+    const { images, elements } = this;
 
-        this.carouselDiv = carouselDiv;
-        this.createImages();
-        this.loop();
+    if (this._ra) {
+      cancelAnimationFrame(this._ra);
     }
 
-    createImages() {
-        const { images, imageElements } = this.state;
-        for (let index = 0; index < images.length; index++) {
-            let imageSrc = images[index];
-            const carouselImage = document.createElement('div');
-            carouselImage.className = 'carousel__image';
-            carouselImage.style.backgroundImage = `url(${imageSrc})`;
-            this.carouselDiv.append(carouselImage);
-            if (index !== 0) carouselImage.classList.add('hide');
+    const previousImage = elements[this.current];
+    this.current = this.current + 1;
 
-            imageElements.push(carouselImage);
-        }
+    if (this.current > images.length - 1) this.current = 0;
+    const currentImageElement = elements[this.current];
+    previousImage.classList.add('hide');
+    currentImageElement.classList.remove('hide');
+
+    this._ra = requestAnimationFrame(now => this.loop(now));
+  }
+
+  prev() {
+    const { images, elements } = this;
+
+    if (this._ra) cancelAnimationFrame(this._ra);
+    console.log('--', this._ra);
+    const previousImage = elements[this.current];
+    this.current = this.current - 1;
+
+    if (this.current < 0) this.current = images.length - 1;
+    const currentImageElement = elements[this.current];
+    previousImage.classList.add('hide');
+    currentImageElement.classList.remove('hide');
+    this._ra = requestAnimationFrame(now => this.loop(now));
+  }
+
+  set imageElements(value) {
+    this._carousel.imageElements = value;
+  }
+
+  set currentImage(value) {
+    this._carousel.current = value;
+  }
+
+  loop(now) {
+    const { images, timeLast } = this;
+
+    if (!images) return;
+
+    if (now - timeLast >= 5.5 * 1000) {
+      this.timeLast = now;
+      this.next();
     }
 
-    next() {
-        const { currentImage, images, imageElements } = this.state;
-
-        const previousImage = imageElements[currentImage];
-        this.state.({currentImage: currentImage + 1});
-
-        if(currentImage > images.length) this.setState({currentImage: 0});
-        currentImageElement = imageElements[currentImage];
-        previousImage.classList.add('hide');
-        currentImageElement.classList.remove('hide');
-    }
-
-    prev() {
-        const { currentImage, images, imageElements } = this.state;
-
-        previousImage = imageElements[currentImage];
-        this.setState({currentImage: currentImage + 1});
-
-        if(currentImage > images.length) this.setState({currentImage: 0});
-        currentImageElement = imageElements[currentImage];
-        previousImage.classList.add('hide');
-        currentImageElement.classList.remove('hide');
-    }
-
-    set state(args) {
-        const { state} = this;
-        this.state = {
-            ...args
-        };
-    }
-
-    handleAnimation(e) {
-        this.loop();
-	}
-
-    loop() {
-        const { images, time, last } = this.state;
-		if (!images) return;
-
-        const now = time;
-        console.log('ttt-----', this)
-        
-		if (time - last >= 3.5 * 1000) {
-            console.log('this.last', last)
-		}
-			this.next();
-
-		requestAnimationFrame(() => this.loop(now));
-    }
+    this._ra = requestAnimationFrame(now => this.loop(now));
+  }
 }

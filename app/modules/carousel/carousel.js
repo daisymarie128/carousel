@@ -83,7 +83,6 @@ export default class Carousel {
     const { images, elements } = this;
 
     if (this._ra) cancelAnimationFrame(this._ra);
-    console.log('--', this._ra);
     const previousImage = elements[this.current];
     this.current = this.current - 1;
 
